@@ -1,11 +1,3 @@
-// identifyAssets, regionMapper
-// generateStorageCFNForLambda,
-// generateStorageCFNForAdditionalLambda,
-// generateLambdaAccessForRekognition,
-// generateStorageAccessForRekognition,
-// removeTextractPolicies,
-// addTextractPolicies,
-
 import identifyAssets from '../assets/identifyQuestions';
 import getAllDefaults from '../default-values/identify-defaults';
 import regionMapper from '../assets/regionMapping';
@@ -29,8 +21,13 @@ const uuid = require('uuid');
 const FunctionServiceNameLambdaFunction = 'Lambda';
 
 // Predictions Info
-const templateFilename = 'identify-template.json.ejs';
-const identifyTypes = ['identifyText', 'identifyEntities', 'identifyLabels'];
+const templateFilenameMap = {
+  identifyText: 'identify-video-text-template.json.ejs',
+  identifyCelebrities: 'identify-video-celebrities-template.json.ejs',
+  identifyLabels: 'identify-video-labels-template.json.ejs',
+  identifyFaces: 'identify-video-faces-template.json.ejs',
+}
+const identifyTypes = ['identifyText', 'identifyFaces', 'identifyLabels', 'identifyCelebrities'];
 
 let service = 'Rekognition';
 const category = 'predictions';
@@ -246,7 +243,7 @@ async function configure(context, resourceObj) {
     updateCFN(context, resourceName, identifyType);
   }
   if (!parameters.resourceName) {
-    await copyCfnTemplate(context, category, resourceName, defaultValues);
+    await copyCfnTemplate(context, category, resourceName, defaultValues, identifyType);
   }
   addRegionMapping(context, resourceName, identifyType);
   return amplifyMetaValues;
@@ -280,10 +277,11 @@ function updateCFN(context, resourceName, identifyType) {
   }
 }
 
-async function copyCfnTemplate(context, categoryName, resourceName, options) {
-  const { amplify } = context;
+async function copyCfnTemplate(context, categoryName, resourceName, options, identifyType) {
+  const { amplify, identifyType } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
+  const templateFilename = templateFilenameMap[identifyType]
   const copyJobs = [
     {
       dir: pluginDir,
@@ -294,36 +292,6 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
 
   // copy over the files
   return await context.amplify.copyBatch(context, copyJobs, options);
-}
-
-async function followUpQuestions(typeObj, identifyType, parameters) {
-  const answers = await inquirer.prompt(typeObj.questions(parameters));
-  Object.assign(answers, await inquirer.prompt(typeObj.auth(parameters)));
-  if (answers.setup && answers.setup === 'default') {
-    Object.assign(answers, typeObj.defaults);
-  }
-  if (identifyType === 'identifyText') {
-    if (answers.identifyDoc) {
-      service = 'RekognitionAndTextract';
-    }
-    Object.assign(answers, typeObj.formatFlag(answers.identifyDoc));
-  }
-  // default values for admin tasks are set
-  if (identifyType === 'identifyEntities') {
-    if (!answers.adminTask) {
-      answers.maxEntities = 0;
-      answers.adminTask = false;
-      answers.folderPolicies = '';
-    }
-    if (answers.folderPolicies === 'app') {
-      answers.adminAuthProtected = 'ALLOW';
-      if (answers.access === 'authAndGuest') {
-        answers.adminGuestProtected = 'ALLOW';
-      }
-    }
-  }
-
-  return answers;
 }
 
 function checkIfAuthExists(context) {
@@ -691,6 +659,8 @@ function removeAdminLambdaTrigger(context, resourceName, s3ResourceName) {
     delete identifyCFNFile.Resources.CollectionsLambdaExecutionRole;
     delete identifyCFNFile.Resources.S3AuthPredicitionsAdminProtectedPolicy;
     delete identifyCFNFile.Resources.S3GuestPredicitionsAdminPublicPolicy;
+
+    // TODO: fix
     delete identifyCFNFile.Resources.IdentifyEntitiesSearchFacesPolicy;
 
     // Update Cloudformtion file
@@ -745,6 +715,7 @@ function removeS3AdminLambdaTrigger(storageCFNFile, adminTriggerFunction) {
   delete storageCFNFile.Parameters[`function${adminTriggerFunction}Arn`];
   delete storageCFNFile.Parameters[`function${adminTriggerFunction}Name`];
   delete storageCFNFile.Parameters[`function${adminTriggerFunction}LambdaExecutionRole`];
+
   const index = storageCFNFile.Resources.S3Bucket.DependsOn.indexOf('AdminTriggerPermissions');
   if (index > -1) {
     storageCFNFile.Resources.S3Bucket.DependsOn.splice(index, 1);

@@ -12,15 +12,19 @@ function categories(info) {
       choices: [
         {
           name: 'Labels',
-          value: { provider: 'awscloudformation', fileName: 'labels-walkthrough.js' },
+          value: { type: 'labels', provider: 'awscloudformation', fileName: 'identify-walkthrough.js' },
         },
         {
           name: 'Faces',
-          value: { provider: 'awscloudformation', fileName: 'faces-walkthrough.js' },
+          value: { type: 'faces', provider: 'awscloudformation', fileName: 'identify-walkthrough.js' },
         },
         {
           name: 'Text',
-          value: { provider: 'awscloudformation', fileName: 'text-walkthrough.js' },
+          value: { type: 'text', provider: 'awscloudformation', fileName: 'identify-walkthrough.js' },
+        },
+        {
+          name: 'Celebrities',
+          value: { type: 'celebrities', provider: 'awscloudformation', fileName: 'identify-walkthrough.js' },
         },
         {
           name: 'Learn More',
@@ -47,35 +51,17 @@ export function consoleSupportedCategories() {
       type: 'list',
       name: 'category',
       message: 'Please select from one of the categories below',
-      choices: [
+      choices: [        
         {
-          name: 'Labels',
+          name: 'Identify',
           value: {
             category: 'Labels',
             provider: 'awscloudformation',
             services: ['Rekognition'],
-            type: 'videoLabelDetection',
-            types: ['startLabelDetection'],
+            type: 'identifyType',
+            types: ['identifyLabels', 'identifyFaces', 'identifyText', 'identifyCelebrities'],
           },
-        },
-        {
-          name: 'Faces',
-          value: {
-            category: 'Faces',
-            provider: 'awscloudformation',            
-            type: 'videoFacesDetection',
-            types: ['startFaceDetection', 'startFaceSearch'],
-          },
-        },
-        {
-          name: 'Text',
-          value: {
-            category: 'Text',
-            provider: 'awscloudformation',            
-            type: 'videoTextDetection',
-            types: ['startTextDetection'],
-          },
-        },
+        }
       ],
     },
   ];
