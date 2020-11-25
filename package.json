@@ -1,0 +1,24 @@
+{
+  "name": "amplify-category-video-predictions",
+  "version": "0.1.0",
+  "description": "amplify-cli video predictions plugin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hogarthww/amplify-category-video-predictions.git"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
+  "dependencies": {
+    "aws-sdk": "^2.765.0",
+    "chalk": "^3.0.0",
+    "fs-extra": "^8.1.0",
+    "inquirer": "^7.3.3",
+    "open": "^7.0.0",
+    "uuid": "^3.4.0"
+  }
+}
