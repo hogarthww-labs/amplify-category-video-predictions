@@ -41,8 +41,27 @@ const setup = {
             value: 'identifyFaces',
           },
           {
+            name: 'Identify Celebrities',
+            value: 'identifyCelebrities',
+          },
+          {
             name: 'Identify Labels',
             value: 'identifyLabels',
+          },
+        ],
+      },
+      {
+        type: 'list',
+        name: 'setup',
+        message: 'Would you like use the default configuration?',
+        choices: [
+          {
+            name: 'Default Configuration',
+            value: 'default',
+          },
+          {
+            name: 'Advanced Configuration',
+            value: 'advanced',
           },
         ],
       },
@@ -64,12 +83,41 @@ const setup = {
 };
 
 const identifyText = {
+  questions(options) {
+    return [
+      // https://docs.aws.amazon.com/rekognition/latest/dg/API_StartTextDetectionFilters.html
+      {
+        type: 'number',
+        name: 'minConfidence',
+        message: 'What confidence level would you like to use identify?',
+        default: options.minConfidence ? options.minConfidence : 50,
+        when: answers => answers.setup === 'advanced',
+        validate: value => (value > 0 && value < 101) || 'Please enter a number between 1 and 100!',
+      },
+      {
+        type: 'number',
+        name: 'minBoundingBoxWidth',
+        message: 'What is the minimum width of text to be identified?',
+        default: options.minBoundingBoxWidth ? options.minBoundingBoxWidth : 50,
+        when: answers => answers.setup === 'advanced',
+        validate: value => (value > 10 && value < 4000) || 'Please enter a number > 10!',
+      },
+      {
+        type: 'number',
+        name: 'minBoundingBoxHeight',
+        message: 'What is the minimum height of text to be identified?',
+        default: options.minBoundingBoxHeight ? options.minBoundingBoxHeight : 10,
+        when: answers => answers.setup === 'advanced',
+        validate: value => (value > 5 && value < 2000) || 'Please enter a number > 5',
+      },      
+    ];
+  },
+  auth: identifyAccess,
+};
+
+const identifyCelebrities = {
   questions(_) {
     return [];
-  },
-  formatFlag(flag) {
-    if (flag) return { format: 'ALL' };
-    return { format: 'PLAIN' };
   },
   auth: identifyAccess,
 };
@@ -93,52 +141,13 @@ const identifyLabels = {
   questions(options) {
     return [
       {
-        type: 'list',
-        name: 'setup',
-        message: 'Would you like use the default configuration?',
-        choices: [
-          {
-            name: 'Default Configuration',
-            value: 'default',
-          },
-          {
-            name: 'Advanced Configuration',
-            value: 'advanced',
-          },
-        ],
-      },
-      {
-        type: 'confirm',
-        name: 'adminTask',
-        message: 'Would you like to identify entities from a collection of images?',
-        default: options.adminTask ? options.adminTask : false,
-        when: answers => answers.setup === 'advanced',
-      },
-      {
         type: 'number',
         name: 'minConfidence',
         message: 'What confidence level would you like to use identify?',
         default: options.minConfidence ? options.minConfidence : 50,
-        when: answers => answers.setup === 'advanced' && answers.adminTask,
+        when: answers => answers.setup === 'advanced',
         validate: value => (value > 0 && value < 101) || 'Please enter a number between 1 and 100!',
-      },
-      {
-        type: 'list',
-        name: 'folderPolicies',
-        message: 'Would you like to allow users to add images to this collection?',
-        choices: [
-          {
-            name: 'Yes',
-            value: 'app',
-          },
-          {
-            name: 'No',
-            value: 'admin',
-          },
-        ],
-        when: answers => answers.setup === 'advanced' && answers.adminTask,
-        default: options.folderPolicies ? options.folderPolicies : 'app',
-      },
+      }
     ];
   },
   auth: identifyAccess,
@@ -180,6 +189,7 @@ const s3bucket = {
 export default {
   setup,
   identifyAccess,
+  identifyCelebrities,
   identifyText,
   identifyFaces,
   identifyLabels,
