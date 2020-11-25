@@ -1,1 +1,1 @@
-export * from './delete';
+module.exports = require('./delete');

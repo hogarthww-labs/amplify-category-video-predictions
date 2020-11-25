@@ -1,1 +1,1 @@
-export * from './processor';
+module.exports = require('./processor');

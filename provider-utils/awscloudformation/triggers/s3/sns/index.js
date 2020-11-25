@@ -1,2 +1,7 @@
-export * from './notificiation-channel';
-export * from './find-or-create';
+const nc = require('./notificiation-channel');
+const foc = require('./find-or-create');
+
+module.exports = {
+  ...nc,
+  ...foc
+} 

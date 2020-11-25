@@ -1,4 +1,4 @@
-async function deleteAssetIndex(rekognition, result, externalAssetID) {
+async function deleteFacesByAssetIndex(rekognition, result, externalAssetID) {
   const len = result.Faces.length;
   let resultDeleted = false;
   for (let i = 0; i < len; i++) {
@@ -24,7 +24,7 @@ async function deleteAssetIndex(rekognition, result, externalAssetID) {
   return resultDeleted;
 }
 
-export function cleanupAsset(asset) {
+export function cleanupFacesCollection(asset) {
   const { externalAssetId, decodeKey } = asset
   let params = {
     CollectionId: process.env.collectionId,
@@ -32,7 +32,7 @@ export function cleanupAsset(asset) {
   };
   
   let result = await rekognition.listFaces(params).promise();
-  let resultDeleted = await deleteAssetIndex(rekognition, result, externalAssetId);
+  let resultDeleted = await deleteFacesByAssetIndex(rekognition, result, externalAssetId);
   
   while (!resultDeleted && result.NextToken) {
     params = {
