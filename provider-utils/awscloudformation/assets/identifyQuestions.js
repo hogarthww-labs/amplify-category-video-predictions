@@ -37,8 +37,8 @@ const setup = {
             value: 'identifyText',
           },
           {
-            name: 'Identify Entities',
-            value: 'identifyEntities',
+            name: 'Identify Faces',
+            value: 'identifyFaces',
           },
           {
             name: 'Identify Labels',
@@ -64,15 +64,8 @@ const setup = {
 };
 
 const identifyText = {
-  questions(options) {
-    return [
-      {
-        type: 'confirm',
-        name: 'identifyDoc',
-        message: 'Would you also like to identify documents?',
-        default: options.identifyDoc ? options.identifyDoc : false,
-      },
-    ];
+  questions(_) {
+    return [];
   },
   formatFlag(flag) {
     if (flag) return { format: 'ALL' };
@@ -81,7 +74,22 @@ const identifyText = {
   auth: identifyAccess,
 };
 
-const identifyEntities = {
+const identifyFaces = {
+  questions(_) {
+    return [
+      {
+        name: 'faceAttributes',
+        type: 'list',
+        message: 'What face attributes do you want to identify?',
+        choices: ['ALL', 'DEFAULT']         
+      }
+    ];
+  },
+  auth: identifyAccess
+};
+
+
+const identifyLabels = {
   questions(options) {
     return [
       {
@@ -101,13 +109,6 @@ const identifyEntities = {
       },
       {
         type: 'confirm',
-        name: 'celebrityDetectionEnabled',
-        message: 'Would you like to enable celebrity detection?',
-        default: options.celebrityDetectionEnabled ? options.celebrityDetectionEnabled : true,
-        when: answers => answers.setup === 'advanced',
-      },
-      {
-        type: 'confirm',
         name: 'adminTask',
         message: 'Would you like to identify entities from a collection of images?',
         default: options.adminTask ? options.adminTask : false,
@@ -115,9 +116,9 @@ const identifyEntities = {
       },
       {
         type: 'number',
-        name: 'maxEntities',
-        message: 'How many entities would you like to identify?',
-        default: options.maxEntities ? options.maxEntities : 50,
+        name: 'minConfidence',
+        message: 'What confidence level would you like to use identify?',
+        default: options.minConfidence ? options.minConfidence : 50,
         when: answers => answers.setup === 'advanced' && answers.adminTask,
         validate: value => (value > 0 && value < 101) || 'Please enter a number between 1 and 100!',
       },
@@ -142,74 +143,10 @@ const identifyEntities = {
   },
   auth: identifyAccess,
   defaults: {
-    celebrityDetectionEnabled: true,
-  },
-};
-
-const identifyLabels = {
-  questions(options) {
-    return [
-      {
-        type: 'list',
-        name: 'setup',
-        message: 'Would you like use the default configuration?',
-        choices: [
-          {
-            name: 'Default Configuration',
-            value: 'default',
-          },
-          {
-            name: 'Advanced Configuration',
-            value: 'advanced',
-          },
-        ],
-      },
-      {
-        type: 'list',
-        name: 'type',
-        message: 'What kind of label detection?',
-        choices: [
-          {
-            name: 'Only identify unsafe labels',
-            value: 'UNSAFE',
-          },
-          {
-            name: 'Identify labels',
-            value: 'LABELS',
-          },
-          {
-            name: 'Identify all kinds',
-            value: 'ALL',
-          },
-        ],
-        when: answers => answers.setup === 'advanced',
-        default: [options.type ? options.type : 'LABELS'],
-      },
-    ];
-  },
-  auth: identifyAccess,
-  defaults: {
-    type: 'LABELS',
   },
 };
 
 const adminTask = [
-  {
-    type: 'list',
-    name: 'adminTask',
-    message: 'What kind of entity recognition are you building?',
-    choices: [
-      {
-        name: 'A general entity recognition',
-        value: false,
-      },
-      {
-        name: 'Detecting entity from a specific set of folder',
-        value: true,
-      },
-    ],
-    default: 'general',
-  },
   {
     type: 'list',
     name: 'folderPolicies',
@@ -244,7 +181,7 @@ export default {
   setup,
   identifyAccess,
   identifyText,
-  identifyEntities,
+  identifyFaces,
   identifyLabels,
   adminTask,
   s3bucket,
