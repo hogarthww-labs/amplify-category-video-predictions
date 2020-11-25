@@ -159,7 +159,7 @@
 											{
 											    "Ref": "storage<%= props.storageResourceName %>BucketName"
 											},
-											"/protected/predictions/start-faces/${cognito-identity.amazonaws.com:sub}/*"
+											"/protected/predictions/video-ai/${cognito-identity.amazonaws.com:sub}/*"
 										]
 									]
 								}
@@ -196,7 +196,7 @@
 											{
 											    "Ref": "storage<%= props.storageResourceName %>BucketName"
 											},
-											"/protected/predictions/start-faces/${cognito-identity.amazonaws.com:sub}/*"
+											"/protected/predictions/video-ai/${cognito-identity.amazonaws.com:sub}/*"
 										]
 									]
 								}
@@ -320,7 +320,7 @@
                                     "           let s3 = new aws.S3();",
                                     "           let params = {",
                                     "           Bucket: event.ResourceProperties.bucketName,",
-                                    "           Key: \"protected/predictions/start-faces/admin/\"",
+                                    "           Key: \"protected/predictions/video-ai/admin/\"",
                                     "           };",
                                     "           s3.putObject(params).promise()",
                                     "           .then((s3Res) => {",

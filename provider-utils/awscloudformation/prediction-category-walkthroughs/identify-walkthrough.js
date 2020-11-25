@@ -39,7 +39,7 @@ const s3defaultValuesFilename = 's3-defaults.js';
 const s3TemplateFileName = 's3-cloudformation-template.json.ejs';
 const s3CloudFormationTemplateFile = 's3-cloudformation-template.json';
 const s3ServiceName = 'S3';
-const prefixForAdminTrigger = 'protected/predictions/start-faces/';
+const prefixForAdminTrigger = 'protected/predictions/video-ai/';
 // TODO support appsync
 
 async function addWalkthrough(context) {
@@ -118,7 +118,7 @@ async function configure(context, resourceObj) {
   // only ask this for add
   if (!parameters.resourceName) {
     answers = await inquirer.prompt(identifyAssets.setup.type());
-
+    
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.identifyType);
     if (resourceType) {
@@ -133,8 +133,9 @@ async function configure(context, resourceObj) {
     identifyType = answers.identifyType;
   }
 
-  // category specific questions
-  Object.assign(answers, await followUpQuestions(identifyAssets[identifyType], identifyType, parameters));
+  // sns specific questions
+  Object.assign(answers, await snsQuestions(parameters));
+
   delete answers.setup;
   Object.assign(defaultValues, answers);
 

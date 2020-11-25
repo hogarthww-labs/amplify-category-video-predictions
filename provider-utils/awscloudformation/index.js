@@ -4,7 +4,7 @@ const path = require('path');
 const chalk = require('chalk');
 const { NotImplementedError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 const parametersFileName = 'parameters.json';
-const prefixForAdminTrigger = 'protected/predictions/start-faces/admin';
+const prefixForAdminTrigger = 'protected/predictions/video-ai/admin';
 const walkThroughFolderName = 'prediction-category-walkthroughs'
 
 function createPredictionCtgWalkthroughSrc(predictionsCategoryFilename) {

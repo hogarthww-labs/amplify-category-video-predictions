@@ -494,7 +494,7 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
               '           let s3 = new aws.S3();',
               '           let params = {',
               '           Bucket: event.ResourceProperties.bucketName,',
-              '           Key: "protected/predictions/index-faces/admin/"',
+              '           Key: "protected/predictions/video-ai/admin/"',
               '           };',
               '           s3.putObject(params).promise()',
               '           .then((s3Res) => {',
