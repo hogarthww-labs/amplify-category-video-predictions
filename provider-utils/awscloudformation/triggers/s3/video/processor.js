@@ -3,12 +3,12 @@ const AWS = require('aws-sdk'); //eslint-disable-line
 // You can also specify an optional input parameter, JobTag, that allows you to 
 // identify the job in the completion status that's published to the Amazon SNS topic.
 function createParams({
-  evRecord,
+  params,
   bucketName, 
   decodeKey 
 }) {
-   const params = {
-    ...evRecord || {},
+   const $params = {
+    ...params || {},
     CollectionId: process.env.collectionId,
     Video: {
       S3Object: {
@@ -17,14 +17,14 @@ function createParams({
       },
     },
   };
-  return params
+  return $params
 }
 function processVideoAsset(asset) {
   const { functionName } = asset
-  const params1 = createParams(asset)
+  const params = createParams(asset)
   const rekognition = new AWS.Rekognition();
   
-  const result = await rekognition[functionName](params1).promise();
+  const result = await rekognition[functionName](params).promise();
   processResult(result, functionName)  
 } 
 

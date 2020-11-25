@@ -2,16 +2,20 @@ const AWS = require('aws-sdk'); //eslint-disable-line
 const querystring = require('querystring');
 const { getNotificationChannel } = require('./sns');
 const { isVideo } = require('./utils');
+const config = require('./config');
 
 exports.handler = async event => {
-  AWS.config.update({
+  const aws = {
     region: event.Records[0].awsRegion,
-  });
+    ...config
+  };  
+  AWS.config.update(aws)
 
   const numberOfRecords = event.Records.length;
   console.log(numberOfRecords);  
   for (let j = 0; j < numberOfRecords; j++) {
-    const evRecord = event.Records[j]
+    const evRecord = event.Records[j].params
+    const params = evRecord.params || config
     const key = evRecord.s3.object.key;
     const decodeKey = Object.keys(querystring.parse(key))[0];
     const bucketName = evRecord.s3.bucket.name;
@@ -19,7 +23,7 @@ exports.handler = async event => {
     const extensionIndex = decodeKey.lastIndexOf('.');
     const extension = decodeKey.substring(extensionIndex + 1);
     const assetName = decodeKey.substring(lastIndex + 1);
-    let functionName = evRecord.functionName
+    let functionName = params.functionName
     const isVid = isVideo(extension)
 
     if (!functionName) {
@@ -27,7 +31,7 @@ exports.handler = async event => {
     }
 
     let asset = {
-      evRecord,
+      params,
       'type': isVid ? 'video' : 'image',
       isVideo: isVid,
       isImage: !isVid,
@@ -40,7 +44,7 @@ exports.handler = async event => {
     }
 
     if (isVid) {      
-      NotificationChannel = await getNotificationChannel(evRecord)
+      NotificationChannel = await getNotificationChannel({params, aws})
       if (NotificationChannel) {
         asset.evRecord.NotificationChannel = NotificationChannel  
       }        

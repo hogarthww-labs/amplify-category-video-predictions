@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Recognize faces in videos stack creation using Amplify CLI",
+    "Description": "Recognize labels in videos stack creation using Amplify CLI",
     "Parameters": {
         "resourceName": {
             "Type": "String"
@@ -29,16 +29,10 @@
         "adminTask": {
             "Type": "String"
         },
-        "maxEntities": {
+        "minConfidence": {
             "Type": "Number"
         },
         "folderPolicies": {
-            "Type": "String"
-        },
-        "identifyDoc": {
-            "Type": "String"
-        },
-        "format": {
             "Type": "String"
         },
         "type": {
@@ -122,11 +116,8 @@
                         ]
             }
         },
-        "format": {
-            "Value": {"Ref": "format"}
-        }
-        ,"maxEntities": {
-            "Value" : {"Ref": "maxEntities"}
+        ,"minConfidence": {
+            "Value" : {"Ref": "minConfidence"}
         }
         "type": {
             "Value" : {"Ref": "type"}
@@ -535,12 +526,12 @@
                     ]
                 }
             },
-            "SearchLabelsPolicy": {
+            "IdentifyLabelsPolicy": {
                 "Type": "AWS::IAM::Policy",
                 "Properties": {
                     "PolicyName": {
                         "Fn::Join": [
-                          "", [{ "Ref":"identifyPolicyName" }, "-", "searchLabels" ]
+                          "", [{ "Ref":"identifyPolicyName" }, "-", "identifyLabels" ]
                         ]
                     },
                     "Roles": {
@@ -605,9 +596,8 @@
                     }
                 }
             },
-        <% } %>
-        <% if (props.identifyType === "identifyFaces") { %> 
-        "IdentifyFacesPolicy": {
+        <% } %>            
+        "IdentifyLabelsPolicy": {
             "Type": "AWS::IAM::Policy",
             "Properties": {
                 "PolicyName": { "Ref":"identifyPolicyName" },
@@ -624,7 +614,7 @@
                         {
                             "Effect": "Allow",
                             "Action": [
-                                "rekognition:StartLabelDetection",
+                                "rekognition:StartLabelsDetection",
                             ],
                             "Resource": "*"
                         }

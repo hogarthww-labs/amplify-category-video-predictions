@@ -29,16 +29,13 @@
         "adminTask": {
             "Type": "String"
         },
-        "maxEntities": {
+        "minConfidence": {
             "Type": "Number"
         },
         "folderPolicies": {
             "Type": "String"
         },
         "identifyDoc": {
-            "Type": "String"
-        },
-        "format": {
             "Type": "String"
         },
         "type": {
@@ -122,11 +119,8 @@
                         ]
             }
         },
-        "format": {
-            "Value": {"Ref": "format"}
-        }
-        ,"maxEntities": {
-            "Value" : {"Ref": "maxEntities"}
+        ,"minConfidence": {
+            "Value" : {"Ref": "minConfidence"}
         }
         "type": {
             "Value" : {"Ref": "type"}
@@ -223,8 +217,7 @@
                         {
                             "Effect": "Allow",
                             "Action": [
-                                "rekognition:StartFaceDetection",
-                                "rekognition:StartFaceSearch"
+                                "rekognition:StartCelebrityRecognition"
                             ],
                             "Resource": [
                                 {
@@ -536,12 +529,12 @@
                     ]
                 }
             },
-            "StartFacesPolicy": {
+            "CelebritiesPolicy": {
                 "Type": "AWS::IAM::Policy",
                 "Properties": {
                     "PolicyName": {
                         "Fn::Join": [
-                          "", [{ "Ref":"identifyPolicyName" }, "-", "startFaces" ]
+                          "", [{ "Ref":"identifyPolicyName" }, "-", "celebrityRecognition" ]
                         ]
                     },
                     "Roles": {
@@ -607,8 +600,7 @@
                 }
             },
         <% } %>
-        <% if (props.identifyType === "startFaces") { %> 
-        "IdentifyFacesPolicy": {
+        "IdentifyCelebritiesPolicy": {
             "Type": "AWS::IAM::Policy",
             "Properties": {
                 "PolicyName": { "Ref":"identifyPolicyName" },
@@ -625,8 +617,7 @@
                         {
                             "Effect": "Allow",
                             "Action": [
-                                "rekognition:StartFaceDetection",
-                                "rekognition:StartFaceSearch"
+                                "rekognition:StartCelebrityRecognition"
                             ],
                             "Resource": "*"
                         }

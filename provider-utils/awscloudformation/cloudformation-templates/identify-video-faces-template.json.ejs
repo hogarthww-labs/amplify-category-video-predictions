@@ -29,16 +29,10 @@
         "adminTask": {
             "Type": "String"
         },
-        "maxEntities": {
+        "minConfidence": {
             "Type": "Number"
         },
         "folderPolicies": {
-            "Type": "String"
-        },
-        "identifyDoc": {
-            "Type": "String"
-        },
-        "format": {
             "Type": "String"
         },
         "type": {
@@ -122,11 +116,8 @@
                         ]
             }
         },
-        "format": {
-            "Value": {"Ref": "format"}
-        }
-        ,"maxEntities": {
-            "Value" : {"Ref": "maxEntities"}
+        ,"minConfidence": {
+            "Value" : {"Ref": "minConfidence"}
         }
         "type": {
             "Value" : {"Ref": "type"}
@@ -536,12 +527,12 @@
                     ]
                 }
             },
-            "StartFacesPolicy": {
+            "FaceRecognitionPolicy": {
                 "Type": "AWS::IAM::Policy",
                 "Properties": {
                     "PolicyName": {
                         "Fn::Join": [
-                          "", [{ "Ref":"identifyPolicyName" }, "-", "startFaces" ]
+                          "", [{ "Ref":"identifyPolicyName" }, "-", "RecognizeFaces" ]
                         ]
                     },
                     "Roles": {
@@ -557,7 +548,8 @@
                             {
                                 "Effect": "Allow",
                                 "Action": [
-                                    "rekognition:StartFaces"
+                                    "rekognition:StartFaceDetection",
+                                    "rekognition:StartFaceSearch"
                                 ],
                                 "Resource": [
                                 {
@@ -607,7 +599,6 @@
                 }
             },
         <% } %>
-        <% if (props.identifyType === "startFaces") { %> 
         "IdentifyFacesPolicy": {
             "Type": "AWS::IAM::Policy",
             "Properties": {

@@ -1,6 +1,6 @@
 async function getNotificationChannel({evRecord, aws}) {
-  let SNSTopicArn = evRecord.SNSTopicArn
-  const RoleArn = evRecord.RoleArn
+  let SNSTopicArn = params.SNSTopicArn
+  const RoleArn = params.RoleArn
 
   if (SNSTopicArn) {
     return {
